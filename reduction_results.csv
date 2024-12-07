@@ -1,0 +1,7 @@
+,time_taken,current_memory,peak_memory,nodes,edges,connectivity,metric
+0,4.578,552616,564532,99,1919,1,in_degree_centrality
+1,4.231,465360,477020,95,1604,2,out_degree_centrality
+2,4.43,482464,494292,95,1670,1,closeness_centrality
+3,4.317,480144,491732,95,1663,1,betweenness_centrality
+4,4.747,559552,571836,95,1970,1,eigenvector_centrality
+5,4.782,545280,556796,95,1936,1,composite_score

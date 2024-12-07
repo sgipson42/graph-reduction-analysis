@@ -1,0 +1,39 @@
+# CENTRALITY
+# Centralization measures the extent to which the ties of a given network are concentrated on a single actor or group of actors. 
+# IN removing nodes from a graph, if you only want to keep important nodes in a graph, you need to define what counts as "an important node" in the context of your problem. In terms of a social network, important nodes can have many connections, control the flow of information, 
+#  Eigenvector Centrality
+
+"""
+Degree centrality only takes into account the number of edges for each node, but it leaves out information about ego’s alters.
+
+However, we might think that power comes from being tied to powerful people. If A and B have the same degree centrality, but A is tied to all high degree people and B is tied to all low degree people, then intuitively we want to see A with a higher score than B.
+
+Closeness might undervalue nodes that are influential but not central to the network (closeness emphasizes who can efficiently disseminate info)
+
+Each centrality measure provides complementary insights:
+
+Degree centrality shows local popularity or activity.
+Closeness centrality identifies global accessibility or efficiency in reaching others.
+Betweenness centrality reveals structural importance as connectors or brokers.
+Analyzing all three measures together would offer a comprehensive view of influence, communication dynamics, and roles within the Congressional Twitter interaction network.
+"""
+#	influential nodes in a social network
+# TODO: degree centrality
+#	assumes important nodes have many connections
+#	measures involvement of the node in the network
+# 	advantage: only the local structure around a node must be known for it to be calculated
+#	disadvantage:  does not take into consideration the global structure of the network. For example, although a node might be connected to many others, it might not be in a position to reach others quickly to access resources, such as information or knowledge
+
+# TODO: closeness centrality
+#	assumes important nodes are close to other nodes
+
+# TODO: betweenness centrality
+#	assumes important nodes connect other nodes
+#	 assess the degree to which a node lies on the shortest path between two other nodes, and are able to funnel the flow in the network. In so doing, a node can assert control over the flow
+# degree, closeness and betweenness are the three formalized measures
+#Degree centrality shows people with many social connections. Closeness centrality indicates who is at the heart of a social network. Betweenness centrality describes people who connect social circles. Eigenvector centrality is high among influential people in the network.
+# eigenvector centrality
+# laplacian
+# 
+# can look at which nodes are chosen from each of these--do they agree? how different are they?
+

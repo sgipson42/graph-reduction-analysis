@@ -7,10 +7,10 @@ import tracemalloc
 #  the final amount of memory allocated after the function has finished
 #  the most amount of memory allocated at any point while the function runs
 #  anything returned by the function
-def statrun(func, *args):
+def statrun(func, *args, **kwargs):
     tracemalloc.start()
     start_time = time.time_ns()
-    funcreturn = func(*args)
+    funcreturn = func(*args, **kwargs)
     end_time = time.time_ns()
     current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
