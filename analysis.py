@@ -159,3 +159,66 @@ for metric in df['metric'].unique():
         plt.savefig(f'./visualizations/{y}_Across_Reduction_Levels_for_{metric}.png')
         #plt.show()
 
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+import numpy as np
+
+# Ensure the directory exists for saving plots
+os.makedirs('./visualizations/', exist_ok=True)
+
+# Set up the plot style
+sns.set(style="whitegrid")
+
+# Iterate through thresholds
+for threshold in df['threshold'].unique():
+    plt.figure(figsize=(12, 8))
+    
+    # Filter data for the current threshold
+    threshold_data = df[df['threshold'] == threshold]
+    
+    # Set up a color palette for metrics
+    palette = sns.color_palette("tab10", n_colors=threshold_data['metric'].nunique())
+    metric_colors = dict(zip(threshold_data['metric'].unique(), palette))
+    
+    for metric in threshold_data['metric'].unique():
+        metric_data = threshold_data[threshold_data['metric'] == metric]
+        
+        # Fit linear regression to visualize trends
+        X = metric_data['reduction_level'].values.reshape(-1, 1)
+        y_values = metric_data['peak_memory'].values
+        model = LinearRegression().fit(X, y_values)
+        y_pred = model.predict(X)
+        r2 = r2_score(y_values, y_pred)
+        
+        # Plot data
+        sns.lineplot(
+            x="reduction_level",
+            y="peak_memory",
+            data=metric_data,
+            marker="o",
+            label=f"{metric} (R²={r2:.2f})",
+            color=metric_colors[metric]
+        )
+        
+        # Add trendline
+        plt.plot(
+            metric_data['reduction_level'], y_pred, 
+            linestyle="--", color=metric_colors[metric]
+        )
+
+    # Add titles and labels
+    title = f"Peak Memory Across Reduction Levels at Threshold {threshold}"
+    plt.title(title, fontsize=16)
+    plt.xlabel("Reduction Level", fontsize=14)
+    plt.ylabel("Peak Memory (bytes)", fontsize=14)
+    plt.legend(title="Metrics", loc="best", fontsize=10)
+    plt.tight_layout()
+    
+    # Save and show the plot
+    safe_title = title.replace(' ', '_').replace('/', '_')
+    plt.savefig(f'./visualizations/{safe_title}.png')
+    plt.show()
+
