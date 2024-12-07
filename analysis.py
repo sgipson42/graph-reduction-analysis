@@ -290,7 +290,7 @@ for threshold in df['threshold'].unique():
             # Plot data
             sns.lineplot(
                 x="reduction_level",
-                y="peak_memory",
+                y="time_taken",
                 data=metric_data,
                 marker="o",
                 label=f"{metric} ({best_fit}, R²={best_r2:.2f})",
@@ -308,10 +308,10 @@ for threshold in df['threshold'].unique():
             print(f"Could not fit models for {metric} at threshold {threshold}: {e}")
     
     # Add titles and labels
-    title = f"Peak Memory Across Reduction Levels at Threshold {threshold}"
+    title = f"Time Taken Across Reduction Levels at Threshold {threshold}"
     plt.title(title, fontsize=16)
     plt.xlabel("Reduction Level", fontsize=14)
-    plt.ylabel("Peak Memory (bytes)", fontsize=14)
+    plt.ylabel("Time Taken (bytes)", fontsize=14)
     plt.legend(title="Metrics", loc="best", fontsize=10)
     plt.tight_layout()
     

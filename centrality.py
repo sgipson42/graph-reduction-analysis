@@ -40,11 +40,20 @@ reduction_df = pd.DataFrame()
 G = getdataset.get_dataset()
 
 #funcs = [nx.in_degree_centrality, nx.out_degree_centrality, nx.closeness_centrality, nx.betweenness_centrality, nx.eigenvector_centrality]
+funcs = [(nx.approximation.betweenness_centrality, {"weight": "weight", "normalized":True}) 
+]
+"""
+funcs = [
+    (nx.eigenvector_centrality, {"weight":"weight", "max_iter":1000}),
+    (nx.in_degree_centrality, {}),
+    (nx.out_degree_centrality, {})
+]
 funcs = [
     (nx.degree_centrality, {}),
     (nx.betweenness_centrality, {"weight": "weight", "normalized":True}),
     (nx.closeness_centrality, {"distance": "weight"})
 ]
+"""
 results_file = 'all_results.csv'
 columns = ['time_taken', 'current_memory', 'peak_memory', 'centrality_scores', 'metric', 'trial', 
            'threshold', 'reduction_level', 'node_count', 'edge_count', 
