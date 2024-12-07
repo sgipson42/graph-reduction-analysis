@@ -4,12 +4,34 @@ import igraph
 from collections import defaultdict
 import sklearn
 import numpy as np
+import pandas as pd
 from infomap import Infomap
 import matplotlib.pyplot as plt
 import getdataset
 import runwithstats
 
 G = getdataset.get_dataset()
+
+
+results_file = 'cdavgresults.csv'
+columns = ['algorithm', 'reduction_level', 'node_count', 'edge_count', 
+           'time_taken', 'current_memory', 'peak_memory', 
+           'number_of_communities', 'size_of_communities',]
+pd.DataFrame(columns=columns).to_csv(results_file, index=False)
+
+def saverow(cdfunc, itr, nodes, edges, time, final, peak, commnumber, commsize):
+    row = {
+        'algorithm': cdfunc,
+        'reduction_level': itr,
+        'node_count': nodes,
+        'edge_count': edges,
+        'time_taken': time,
+        'current_memory': final,
+        'peak_memory': peak,
+        'number_of_communities': commnumber,
+        'size_of_communities': commsize,
+    }
+    pd.DataFrame([row]).to_csv(results_file, mode='a', header=False, index=False)
 
 
 def imap(G):
@@ -112,7 +134,7 @@ def massrunim(G, runs):
         G1, nodes1, edges1, time1, final1, peak1, commnum1, commsize1 = statrunim(G, 150)
         G2, nodes2, edges2, time2, final2, peak2, commnum2, commsize2 = statrunim(G1, 100)
         G3, nodes3, edges3, time3, final3, peak3, commnum3, commsize3 = statrunim(G2, 100)
-        G4, nodes4, edges4, time4, final4, peak4, commnum4, commsize4 = statrunim(G3, 108)
+        G4, nodes4, edges4, time4, final4, peak4, commnum4, commsize4 = statrunim(G3, 100)
         G5, nodes5, edges5, time5, final5, peak5, commnum5, commsize5 = statrunim(G4, 100)
         tn1 = tn1 + nodes1
         tn2 = tn2 + nodes2
@@ -210,6 +232,11 @@ def massrunim(G, runs):
     print(f"  3: {acn3} communities, averaging size {acs3}")
     print(f"  4: {acn4} communities, averaging size {acs4}")
     print(f"  5: {acn5} communities, averaging size {acs5}")
+    saverow("infomap", 1, an1, ae1, at1, af1, ap1, acn1, acs1)
+    saverow("infomap", 2, an2, ae2, at2, af2, ap2, acn2, acs2)
+    saverow("infomap", 3, an3, ae3, at3, af3, ap3, acn3, acs3)
+    saverow("infomap", 4, an4, ae4, at4, af4, ap4, acn4, acs4)
+    saverow("infomap", 5, an5, ae5, at5, af5, ap5, acn5, acs5)
     return G5
 
 
@@ -233,7 +260,7 @@ def massrunlp(G, runs):
     run = 0
     while run < runs:
         G1, nodes1, edges1, time1, final1, peak1, commnum1, commsize1 = statrunlp(G, 100)
-        G2, nodes2, edges2, time2, final2, peak2, commnum2, commsize2 = statrunlp(G1, 234)
+        G2, nodes2, edges2, time2, final2, peak2, commnum2, commsize2 = statrunlp(G1, 125)
         G3, nodes3, edges3, time3, final3, peak3, commnum3, commsize3 = statrunlp(G2, 150)
         G4, nodes4, edges4, time4, final4, peak4, commnum4, commsize4 = statrunlp(G3, 175)
         G5, nodes5, edges5, time5, final5, peak5, commnum5, commsize5 = statrunlp(G4, 200)
@@ -333,11 +360,16 @@ def massrunlp(G, runs):
     print(f"  3: {acn3} communities, averaging size {acs3}")
     print(f"  4: {acn4} communities, averaging size {acs4}")
     print(f"  5: {acn5} communities, averaging size {acs5}")
+    saverow("label_propagation", 1, an1, ae1, at1, af1, ap1, acn1, acs1)
+    saverow("label_propagation", 2, an2, ae2, at2, af2, ap2, acn2, acs2)
+    saverow("label_propagation", 3, an3, ae3, at3, af3, ap3, acn3, acs3)
+    saverow("label_propagation", 4, an4, ae4, at4, af4, ap4, acn4, acs4)
+    saverow("label_propagation", 5, an5, ae5, at5, af5, ap5, acn5, acs5)
     return G5
 
 # test size 5 to check functionality, up to 100 for data collection
-Gim = massrunim(G, 5)
-Glp = massrunlp(G, 5)
+Gim = massrunim(G, 100)
+Glp = massrunlp(G, 100)
 
 # file_path = "congress_network/congress.edgelist"
 # G = nx.read_edgelist(file_path, create_using=nx.DiGraph)
@@ -359,5 +391,5 @@ def graphlp(G):
     plt.savefig("visualizations/labelprop.png", dpi=300)
     # plt.show()
 
-# graphim(Gim)
-# graphlp(Glp)
+graphim(Gim)
+graphlp(Glp)
