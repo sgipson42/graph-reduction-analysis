@@ -5,6 +5,7 @@ from collections import defaultdict
 import sklearn
 import numpy as np
 from infomap import Infomap
+import matplotlib.pyplot as plt
 import getdataset
 import runwithstats
 
@@ -109,10 +110,10 @@ def massrunim(G, runs):
     run = 0
     while run < runs:
         G1, nodes1, edges1, time1, final1, peak1, commnum1, commsize1 = statrunim(G, 150)
-        G2, nodes2, edges2, time2, final2, peak2, commnum2, commsize2 = statrunim(G1, 150)
-        G3, nodes3, edges3, time3, final3, peak3, commnum3, commsize3 = statrunim(G2, 150)
-        G4, nodes4, edges4, time4, final4, peak4, commnum4, commsize4 = statrunim(G3, 150)
-        G5, nodes5, edges5, time5, final5, peak5, commnum5, commsize5 = statrunim(G4, 150)
+        G2, nodes2, edges2, time2, final2, peak2, commnum2, commsize2 = statrunim(G1, 100)
+        G3, nodes3, edges3, time3, final3, peak3, commnum3, commsize3 = statrunim(G2, 100)
+        G4, nodes4, edges4, time4, final4, peak4, commnum4, commsize4 = statrunim(G3, 108)
+        G5, nodes5, edges5, time5, final5, peak5, commnum5, commsize5 = statrunim(G4, 100)
         tn1 = tn1 + nodes1
         tn2 = tn2 + nodes2
         tn3 = tn3 + nodes3
@@ -209,6 +210,7 @@ def massrunim(G, runs):
     print(f"  3: {acn3} communities, averaging size {acs3}")
     print(f"  4: {acn4} communities, averaging size {acs4}")
     print(f"  5: {acn5} communities, averaging size {acs5}")
+    return G5
 
 
 def massrunlp(G, runs):
@@ -231,7 +233,7 @@ def massrunlp(G, runs):
     run = 0
     while run < runs:
         G1, nodes1, edges1, time1, final1, peak1, commnum1, commsize1 = statrunlp(G, 100)
-        G2, nodes2, edges2, time2, final2, peak2, commnum2, commsize2 = statrunlp(G1, 125)
+        G2, nodes2, edges2, time2, final2, peak2, commnum2, commsize2 = statrunlp(G1, 234)
         G3, nodes3, edges3, time3, final3, peak3, commnum3, commsize3 = statrunlp(G2, 150)
         G4, nodes4, edges4, time4, final4, peak4, commnum4, commsize4 = statrunlp(G3, 175)
         G5, nodes5, edges5, time5, final5, peak5, commnum5, commsize5 = statrunlp(G4, 200)
@@ -331,7 +333,31 @@ def massrunlp(G, runs):
     print(f"  3: {acn3} communities, averaging size {acs3}")
     print(f"  4: {acn4} communities, averaging size {acs4}")
     print(f"  5: {acn5} communities, averaging size {acs5}")
+    return G5
 
 # test size 5 to check functionality, up to 100 for data collection
-massrunim(G, 5)
-massrunlp(G, 5)
+Gim = massrunim(G, 5)
+Glp = massrunlp(G, 5)
+
+# file_path = "congress_network/congress.edgelist"
+# G = nx.read_edgelist(file_path, create_using=nx.DiGraph)
+
+# visualize graphs for each
+def graphim(G):
+    plt.figure(figsize=(12, 8))
+    pos = nx.spring_layout(G, seed=42)
+    plt.title("after infomap")
+    nx.draw(G, pos, with_labels=True)
+    plt.savefig("visualizations/infomap.png", dpi=300)
+    # plt.show()
+
+def graphlp(G):
+    plt.figure(figsize=(12, 8))
+    pos = nx.spring_layout(G, seed=42)
+    plt.title("after label propogation")
+    nx.draw(G, pos, with_labels=True)
+    plt.savefig("visualizations/labelprop.png", dpi=300)
+    # plt.show()
+
+# graphim(Gim)
+# graphlp(Glp)
