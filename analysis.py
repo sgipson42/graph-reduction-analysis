@@ -159,6 +159,7 @@ for metric in df['metric'].unique():
         plt.savefig(f'./visualizations/{y}_Across_Reduction_Levels_for_{metric}.png')
         #plt.show()
 
+"""
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -209,6 +210,103 @@ for threshold in df['threshold'].unique():
             linestyle="--", color=metric_colors[metric]
         )
 
+    # Add titles and labels
+    title = f"Peak Memory Across Reduction Levels at Threshold {threshold}"
+    plt.title(title, fontsize=16)
+    plt.xlabel("Reduction Level", fontsize=14)
+    plt.ylabel("Peak Memory (bytes)", fontsize=14)
+    plt.legend(title="Metrics", loc="best", fontsize=10)
+    plt.tight_layout()
+    
+    # Save and show the plot
+    safe_title = title.replace(' ', '_').replace('/', '_')
+    plt.savefig(f'./visualizations/{safe_title}.png')
+    plt.show()
+"""
+
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import r2_score
+from scipy.optimize import curve_fit
+
+# Ensure the directory exists for saving plots
+os.makedirs('./visualizations/', exist_ok=True)
+
+# Set up the plot style
+sns.set(style="whitegrid")
+
+# Define models
+def logarithmic(x, a, b):
+    return a * np.log(x + 1) + b  # Add 1 to avoid log(0)
+
+def exponential(x, a, b):
+    return a * np.exp(b * x)
+
+# Iterate through thresholds
+for threshold in df['threshold'].unique():
+    plt.figure(figsize=(12, 8))
+    
+    # Filter data for the current threshold
+    threshold_data = df[df['threshold'] == threshold]
+    
+    # Set up a color palette for metrics
+    palette = sns.color_palette("tab10", n_colors=threshold_data['metric'].nunique())
+    metric_colors = dict(zip(threshold_data['metric'].unique(), palette))
+    
+    for metric in threshold_data['metric'].unique():
+        metric_data = threshold_data[threshold_data['metric'] == metric]
+        
+        # Fit logarithmic and exponential models
+        X = metric_data['reduction_level'].values
+        y_values = metric_data['peak_memory'].values
+        
+        try:
+            # Logarithmic fit
+            log_params, _ = curve_fit(logarithmic, X, y_values)
+            log_y_pred = logarithmic(X, *log_params)
+            log_r2 = r2_score(y_values, log_y_pred)
+            
+            # Exponential fit
+            exp_params, _ = curve_fit(exponential, X, y_values, maxfev=10000)
+            exp_y_pred = exponential(X, *exp_params)
+            exp_r2 = r2_score(y_values, exp_y_pred)
+            
+            # Choose the best model
+            if log_r2 > exp_r2:
+                best_fit = "Logarithmic"
+                best_params = log_params
+                best_r2 = log_r2
+                best_y_pred = log_y_pred
+                equation = f"{log_params[0]:.2f}*ln(x) + {log_params[1]:.2f}"
+            else:
+                best_fit = "Exponential"
+                best_params = exp_params
+                best_r2 = exp_r2
+                best_y_pred = exp_y_pred
+                equation = f"{exp_params[0]:.2f}*e^({exp_params[1]:.2f}*x)"
+            
+            # Plot data
+            sns.lineplot(
+                x="reduction_level",
+                y="peak_memory",
+                data=metric_data,
+                marker="o",
+                label=f"{metric} ({best_fit}, R²={best_r2:.2f})",
+                color=metric_colors[metric]
+            )
+            
+            # Add trendline
+            plt.plot(
+                X, best_y_pred, 
+                linestyle="--", color=metric_colors[metric],
+                label=f"{metric} Equation: {equation}"
+            )
+        
+        except Exception as e:
+            print(f"Could not fit models for {metric} at threshold {threshold}: {e}")
+    
     # Add titles and labels
     title = f"Peak Memory Across Reduction Levels at Threshold {threshold}"
     plt.title(title, fontsize=16)
